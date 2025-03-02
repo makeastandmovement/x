@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>My Blog</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 20px; }
+        .post { margin-bottom: 20px; border-bottom: 1px solid gray; padding-bottom: 20px; }
+    </style>
+</head>
+<body>
+    <h1>My Blog</h1>
+    <div id="posts"></div>
+    <a href="login.html">Login</a>
+
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script>
+        const supabase = Supabase.createClient('https://gcvpdvtpojqafojqaibr.supabase.co', 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImdjdnBkdnRwb2pxYWZvanFhaWJyIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDA4NzYxNDMsImV4cCI6MjA1NjQ1MjE0M30.e-HnIjJFA0T2UlVyVBhJM46pTu66vAKrsIfoFkwFgEk');
+
+        async function loadPosts() {
+            const { data, error } = await supabase.from('posts').select('*').order('created_at', { ascending: false });
+            if (error) {
+                console.log('Error:', error);
+                return;
+            }
+            const postsDiv = document.getElementById('posts');
+            postsDiv.innerHTML = '';
+            data.forEach(post => {
+                postsDiv.innerHTML += `
+                    <div class="post">
+                        <h2>${post.title}</h2>
+                        <p>${post.content}</p>
+                        <small>${new Date(post.created_at).toLocaleDateString()}</small>
+                    </div>
+                `;
+            });
+        }
+        loadPosts();
+    </script>
+</body>
+</html>
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Login</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 20px; }
+        input, button { display: block; margin: 10px 0; }
+    </style>
+</head>
+<body>
+    <h1>Login</h1>
+    <input type="email" id="email" placeholder="Email">
+    <input type="password" id="password" placeholder="Password">
+    <button onclick="login()">Login</button>
+    <p id="message"></p>
+
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script>
+        const supabase = Supabase.createClient('https://gcvpdvtpojqafojqaibr.supabase.co', 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImdjdnBkdnRwb2pxYWZvanFhaWJyIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDA4NzYxNDMsImV4cCI6MjA1NjQ1MjE0M30.e-HnIjJFA0T2UlVyVBhJM46pTu66vAKrsIfoFkwFgEk');
+
+        async function login() {
+            const email = document.getElementById('email').value;
+            const password = document.getElementById('password').value;
+            const { error } = await supabase.auth.signInWithPassword({ email, password });
+            if (error) {
+                document.getElementById('message').innerText = 'Wrong email or password!';
+            } else {
+                window.location.href = 'admin.html';
+            }
+        }
+    </script>
+</body>
+</html>
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Admin Panel</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 20px; }
+        input, textarea, button { display: block; margin: 10px 0; width: 100%; }
+        textarea { height: 200px; }
+    </style>
+</head>
+<body>
+    <h1>Admin Panel</h1>
+    <input type="text" id="title" placeholder="Post Title">
+    <textarea id="content" placeholder="Post Content"></textarea>
+    <button onclick="publish()">Publish</button>
+    <button onclick="logout()">Logout</button>
+    <p id="message"></p>
+
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script>
+        const supabase = Supabase.createClient('https://gcvpdvtpojqafojqaibr.supabase.co
+', 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImdjdnBkdnRwb2pxYWZvanFhaWJyIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDA4NzYxNDMsImV4cCI6MjA1NjQ1MjE0M30.e-HnIjJFA0T2UlVyVBhJM46pTu66vAKrsIfoFkwFgEk');
+
+        async function checkAuth() {
+            const { data: { user } } = await supabase.auth.getUser();
+            if (!user) window.location.href = 'login.html';
+        }
+        checkAuth();
+
+        async function publish() {
+            const title = document.getElementById('title').value;
+            const content = document.getElementById('content').value;
+            const { error } = await supabase.from('posts').insert({ title, content });
+            if (error) {
+                document.getElementById('message').innerText = 'Error publishing!';
+            } else {
+                document.getElementById('message').innerText = 'Post published!';
+                document.getElementById('title').value = '';
+                document.getElementById('content').value = '';
+            }
+        }
+
+        async function logout() {
+            await supabase.auth.signOut();
+            window.location.href = 'login.html';
+        }
+    </script>
+</body>
+</html>
