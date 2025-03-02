@@ -1,0 +1,4 @@
+<div class="post">
+    <h2>Your Post Title</h2>
+    <p>Your post content goes here. Write as much as you want!</p>
+</div>
