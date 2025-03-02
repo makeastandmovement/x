@@ -4,136 +4,227 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Project X</title>
-    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js"></script>
+    
     <style>
-        /* Your existing styles remain unchanged */
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #121212;
+            color: #fff;
+            text-align: center;
+            margin: 0;
+            padding: 20px;
+        }
+        input, textarea {
+            width: 80%;
+            padding: 10px;
+            margin: 10px;
+            background-color: #333;
+            color: #fff;
+            border: 1px solid #555;
+            border-radius: 4px;
+        }
+        button {
+            padding: 10px 20px;
+            background-color: #444;
+            color: white;
+            border: none;
+            margin: 5px;
+            cursor: pointer;
+            border-radius: 4px;
+            transition: background-color 0.3s;
+        }
+        button:hover {
+            background-color: #666;
+        }
+        .post {
+            background-color: #222;
+            padding: 15px;
+            margin: 15px auto;
+            width: 80%;
+            border-radius: 5px;
+            border: 1px solid #555;
+            text-align: left;
+        }
+        .delete-btn {
+            background-color: #e53935;
+            color: white;
+            border: none;
+            padding: 5px 10px;
+            cursor: pointer;
+            border-radius: 3px;
+        }
+        .post-time {
+            color: #aaa;
+            font-size: 0.8em;
+        }
+        textarea {
+            min-height: 100px;
+            resize: vertical;
+        }
+        .loading {
+            margin: 20px auto;
+            color: #aaa;
+        }
     </style>
+
+    <!-- Load Supabase Library (fixed version) -->
+    <script src="https://unpkg.com/@supabase/supabase-js@2"></script>
 </head>
 <body>
+
     <h1>Project X</h1>
-    
-    <div id="status-container"></div>
-    
-    <div id="main-page">
-        <div class="input-container">
-            <label for="entry-title">Title:</label>
-            <input type="text" id="entry-title" placeholder="Enter title">
-            
-            <label for="entry-content" style="margin-top: 15px;">Content:</label>
-            <textarea id="entry-content" placeholder="Write your content here..."></textarea>
-        </div>
-        
-        <div class="button-container">
-            <button class="button" onclick="saveEntry()">Post</button>
-            <button class="button secondary" onclick="clearForm()">Clear</button>
-        </div>
-        
-        <div class="entries-list" id="entries-list">
-            <h2>All Posts</h2>
-            <div id="entries"></div>
-        </div>
+
+    <div>
+        <label for="entry-title">Title:</label>
+        <input type="text" id="entry-title" placeholder="Enter title">
     </div>
-    
-    <div id="post-page" style="display: none;">
-        <a href="#" class="back-link" onclick="showMainPage(); return false;">&larr; Back to main page</a>
-        <div class="post-container">
-            <h1 class="post-title" id="post-title"></h1>
-            <span class="post-date" id="post-date"></span>
-            <div class="post-content" id="post-content"></div>
-        </div>
+
+    <div>
+        <label for="entry-content">Content:</label>
+        <textarea id="entry-content" placeholder="Write your content here..."></textarea>
     </div>
-    
+
+    <button onclick="savePost()">Post</button>
+    <button onclick="clearForm()">Clear</button>
+
+    <h2>All Posts</h2>
+    <div id="posts-list">
+        <p class="loading">Loading posts...</p>
+    </div>
+
     <script>
-        // Initialize Supabase
+        // Initialize Supabase (fixed)
         const SUPABASE_URL = "https://gcvpdvtpojqafojqaibr.supabase.co";
         const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImdjdnBkdnRwb2pxYWZvanFhaWJyIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDA4NzYxNDMsImV4cCI6MjA1NjQ1MjE0M30.e-HnIjJFA0T2UlVyVBhJM46pTu66vAKrsIfoFkwFgEk";
         const supabase = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
-        // Function to show status messages
-        function showStatus(message, isError = false) {
-            const statusContainer = document.getElementById('status-container');
-            const messageClass = isError ? 'error' : 'success';
-            statusContainer.innerHTML = `<div class="status-message ${messageClass}">${message}</div>`;
-            setTimeout(() => { statusContainer.innerHTML = ''; }, 5000);
-        }
+        // Save Post
+        async function savePost() {
+            let title = document.getElementById("entry-title").value.trim();
+            let content = document.getElementById("entry-content").value.trim();
 
-        async function saveEntry() {
-            const title = document.getElementById('entry-title').value.trim();
-            const content = document.getElementById('entry-content').value.trim();
-            if (!title) {
-                showStatus('Please enter a title for your post.', true);
+            if (!title || !content) {
+                alert("Please fill in both fields.");
                 return;
             }
-            const { data, error } = await supabase.from('posts').insert([{ title, content }]);
-            if (error) {
-                showStatus("There was an error saving your post: " + error.message, true);
-            } else {
-                showStatus('Post created successfully!');
+
+            try {
+                const { data, error } = await supabase
+                    .from("posts")
+                    .insert([{ 
+                        title, 
+                        content,
+                        created_at: new Date().toISOString() 
+                    }]);
+
+                if (error) {
+                    throw error;
+                }
+
+                alert("Post saved successfully!");
                 clearForm();
-                loadEntries();
+                loadPosts(); // Refresh the list
+            } catch (error) {
+                console.error("Error saving post:", error.message);
+                alert("Failed to save post: " + error.message);
             }
         }
 
-        async function loadEntries() {
-            const entriesContainer = document.getElementById('entries');
-            const { data, error } = await supabase.from('posts').select('*').order('created_at', { ascending: false });
-            if (error) {
-                showStatus("Error loading posts: " + error.message, true);
+        // Load All Posts from Supabase
+        async function loadPosts() {
+            try {
+                const { data, error } = await supabase
+                    .from("posts")
+                    .select("*")
+                    .order("created_at", { ascending: false });
+
+                if (error) {
+                    throw error;
+                }
+
+                const postsList = document.getElementById("posts-list");
+                postsList.innerHTML = ""; // Clear previous posts
+
+                if (data.length === 0) {
+                    postsList.innerHTML = "<p>No posts yet. Be the first to post!</p>";
+                    return;
+                }
+
+                data.forEach(post => {
+                    const postElement = document.createElement("div");
+                    postElement.classList.add("post");
+                    
+                    // Safely escape HTML content to prevent XSS
+                    const safeTitle = escapeHtml(post.title);
+                    const safeContent = escapeHtml(post.content).replace(/\n/g, '<br>');
+                    
+                    postElement.innerHTML = `
+                        <h3>${safeTitle}</h3>
+                        <p>${safeContent}</p>
+                        <p class="post-time"><small>${new Date(post.created_at).toLocaleString()}</small></p>
+                        <button class="delete-btn" onclick="deletePost(${post.id})">Delete</button>
+                    `;
+                    postsList.appendChild(postElement);
+                });
+            } catch (error) {
+                console.error("Error loading posts:", error.message);
+                document.getElementById("posts-list").innerHTML = 
+                    `<p>Error loading posts: ${error.message}</p>`;
+            }
+        }
+
+        // Delete Post
+        async function deletePost(id) {
+            if (!confirm("Are you sure you want to delete this post?")) {
                 return;
             }
-            if (!data.length) {
-                entriesContainer.innerHTML = '<div class="no-entries">No entries yet. Start writing above!</div>';
-                return;
-            }
-            let entriesHTML = '';
-            data.forEach((post, index) => {
-                entriesHTML += `
-                    <div class="entry-item" id="entry-item-${post.id}">
-                        <span>${index + 1}. </span>
-                        <a href="#" class="entry-link" onclick="showPost(${post.id}); return false;">${post.title}</a>
-                        <span class="entry-date">${new Date(post.created_at).toLocaleString()}</span>
-                        <button class="delete-button" onclick="deleteEntry(${post.id}); event.stopPropagation();">Delete</button>
-                    </div>
-                `;
-            });
-            entriesContainer.innerHTML = entriesHTML;
-        }
+            
+            try {
+                const { error } = await supabase
+                    .from("posts")
+                    .delete()
+                    .eq("id", id);
 
-        async function showPost(id) {
-            const { data, error } = await supabase.from('posts').select('*').eq('id', id).single();
-            if (error || !data) {
-                showStatus('Post not found!', true);
-                return;
-            }
-            document.getElementById('post-title').textContent = data.title;
-            document.getElementById('post-date').textContent = new Date(data.created_at).toLocaleString();
-            document.getElementById('post-content').textContent = data.content;
-            document.getElementById('main-page').style.display = 'none';
-            document.getElementById('post-page').style.display = 'block';
-        }
+                if (error) {
+                    throw error;
+                }
 
-        async function deleteEntry(id) {
-            if (!confirm('Are you sure you want to delete this post?')) return;
-            const { error } = await supabase.from('posts').delete().eq('id', id);
-            if (error) {
-                showStatus("Error deleting post: " + error.message, true);
-            } else {
-                showStatus('Post deleted successfully.');
-                loadEntries();
+                alert("Post deleted successfully!");
+                loadPosts(); // Refresh the list
+            } catch (error) {
+                console.error("Error deleting post:", error.message);
+                alert("Failed to delete post: " + error.message);
             }
         }
 
+        // Clear Form Fields
         function clearForm() {
-            document.getElementById('entry-title').value = '';
-            document.getElementById('entry-content').value = '';
+            document.getElementById("entry-title").value = "";
+            document.getElementById("entry-content").value = "";
         }
 
-        function showMainPage() {
-            document.getElementById('main-page').style.display = 'block';
-            document.getElementById('post-page').style.display = 'none';
+        // Helper function to escape HTML and prevent XSS
+        function escapeHtml(unsafe) {
+            return unsafe
+                .replace(/&/g, "&amp;")
+                .replace(/</g, "&lt;")
+                .replace(/>/g, "&gt;")
+                .replace(/"/g, "&quot;")
+                .replace(/'/g, "&#039;");
         }
 
-        document.addEventListener("DOMContentLoaded", loadEntries);
+        // Load Posts on Page Load
+        document.addEventListener("DOMContentLoaded", function() {
+            // Check if Supabase is properly loaded
+            if (typeof supabase === 'undefined') {
+                document.getElementById("posts-list").innerHTML = 
+                    '<p>Error: Supabase client not loaded. Please check your connection.</p>';
+                return;
+            }
+            
+            loadPosts();
+        });
     </script>
+
 </body>
 </html>
