@@ -94,11 +94,11 @@
 
     <script>
         // Initialize Supabase client properly
-        const SUPABASE_URL = "YOUR_SUPABASE_URL";
-        const SUPABASE_ANON_KEY = "YOUR_SUPABASE_ANON_KEY";
+        const SUPABASE_URL = "YOUR_SUPABASE_URL"; // Replace with your Supabase URL
+        const SUPABASE_ANON_KEY = "YOUR_SUPABASE_ANON_KEY"; // Replace with your Supabase anon key
         
-        // Create the Supabase client correctly
-        const supabase = supabaseJs.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+        // Correctly create the Supabase client
+        const supabase = Supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
         // Save Post
         async function savePost() {
@@ -217,13 +217,11 @@
 
         // Load Posts on Page Load
         document.addEventListener("DOMContentLoaded", function() {
-            // Check if Supabase is properly loaded
-            if (typeof supabaseJs === 'undefined') {
+            if (typeof Supabase === 'undefined') {
                 document.getElementById("posts-list").innerHTML = 
                     '<p>Error: Supabase client not loaded. Please check your connection.</p>';
                 return;
             }
-            
             loadPosts();
         });
     </script>
