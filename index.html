@@ -1,19 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-
-// ✅ Make sure Supabase is loaded first
-const { createClient } = supabase;
-
-const SUPABASE_URL = "YOUR_SUPABASE_URL"; 
-const SUPABASE_ANON_KEY = "YOUR_SUPABASE_ANON_KEY"; 
-
-const supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
-
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js"></script>
-<script src="script.js"></script>
-
-
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Project X</title>
@@ -80,8 +67,8 @@ const supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
         }
     </style>
 
-    <!-- Load Supabase Library (fixed version) -->
-    <script src="https://unpkg.com/@supabase/supabase-js@2"></script>
+    <!-- Load Supabase Library -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 </head>
 <body>
 
@@ -106,10 +93,12 @@ const supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
     </div>
 
     <script>
-        // Initialize Supabase (fixed)
-        const SUPABASE_URL = "https://gcvpdvtpojqafojqaibr.supabase.co";
-        const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImdjdnBkdnRwb2pxYWZvanFhaWJyIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDA4NzYxNDMsImV4cCI6MjA1NjQ1MjE0M30.e-HnIjJFA0T2UlVyVBhJM46pTu66vAKrsIfoFkwFgEk";
-        const supabase = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+        // Initialize Supabase client properly
+        const SUPABASE_URL = "YOUR_SUPABASE_URL";
+        const SUPABASE_ANON_KEY = "YOUR_SUPABASE_ANON_KEY";
+        
+        // Create the Supabase client correctly
+        const supabase = supabaseJs.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
         // Save Post
         async function savePost() {
@@ -229,7 +218,7 @@ const supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
         // Load Posts on Page Load
         document.addEventListener("DOMContentLoaded", function() {
             // Check if Supabase is properly loaded
-            if (typeof supabase === 'undefined') {
+            if (typeof supabaseJs === 'undefined') {
                 document.getElementById("posts-list").innerHTML = 
                     '<p>Error: Supabase client not loaded. Please check your connection.</p>';
                 return;
