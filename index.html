@@ -5,56 +5,129 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Project X</title>
     <style>
+        :root {
+            --bg-color: #f0f0f0;
+            --text-color: #333;
+            --title-color: #2c3e50;
+            --card-bg: white;
+            --border-color: #ddd;
+            --button-primary: #3498db;
+            --button-primary-hover: #2980b9;
+            --button-secondary: #95a5a6;
+            --button-secondary-hover: #7f8c8d;
+            --button-delete: #e74c3c;
+            --button-delete-hover: #c0392b;
+            --link-color: #3498db;
+            --shadow-color: rgba(0,0,0,0.1);
+            --date-color: #888;
+            --success-bg: #d4edda;
+            --success-color: #155724;
+            --error-bg: #f8d7da;
+            --error-color: #721c24;
+        }
+
+        .dark-mode {
+            --bg-color: #1a1a1a;
+            --text-color: #f0f0f0;
+            --title-color: #6ab0de;
+            --card-bg: #2c2c2c;
+            --border-color: #444;
+            --button-primary: #2980b9;
+            --button-primary-hover: #3498db;
+            --button-secondary: #7f8c8d;
+            --button-secondary-hover: #95a5a6;
+            --button-delete: #c0392b;
+            --button-delete-hover: #e74c3c;
+            --link-color: #6ab0de;
+            --shadow-color: rgba(0,0,0,0.3);
+            --date-color: #aaa;
+            --success-bg: #1e4620;
+            --success-color: #d4edda;
+            --error-bg: #541c24;
+            --error-color: #f8d7da;
+        }
+
         body {
             font-family: Arial, sans-serif;
             max-width: 800px;
             margin: 0 auto;
             padding: 20px;
             line-height: 1.6;
-            background-color: #f0f0f0;
-            color: #333;
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            transition: all 0.3s ease;
         }
+
+        .mode-toggle {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            z-index: 100;
+            cursor: pointer;
+            background-color: var(--button-primary);
+            color: white;
+            border: none;
+            border-radius: 50px;
+            padding: 8px 16px;
+            font-size: 14px;
+            box-shadow: 0 2px 5px var(--shadow-color);
+        }
+
+        .mode-toggle:hover {
+            background-color: var(--button-primary-hover);
+        }
+
         h1 {
             text-align: center;
             margin-bottom: 30px;
-            color: #2c3e50;
+            color: var(--title-color);
         }
+
         .input-container {
             margin-bottom: 20px;
-            background-color: white;
+            background-color: var(--card-bg);
             padding: 20px;
             border-radius: 8px;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            box-shadow: 0 2px 4px var(--shadow-color);
         }
+
         label {
             display: block;
             margin-bottom: 5px;
             font-weight: bold;
-            color: #2c3e50;
+            color: var(--title-color);
         }
+
         input[type="text"] {
             width: 100%;
             padding: 10px;
             font-size: 16px;
-            border: 1px solid #ddd;
+            border: 1px solid var(--border-color);
             border-radius: 4px;
+            background-color: var(--card-bg);
+            color: var(--text-color);
         }
+
         textarea {
             width: 100%;
             height: 300px;
             padding: 10px;
             font-size: 16px;
-            border: 1px solid #ddd;
+            border: 1px solid var(--border-color);
             border-radius: 4px;
             resize: vertical;
+            background-color: var(--card-bg);
+            color: var(--text-color);
         }
+
         .button-container {
             display: flex;
             gap: 10px;
             margin-bottom: 30px;
         }
+
         .button {
-            background-color: #3498db;
+            background-color: var(--button-primary);
             color: white;
             padding: 10px 15px;
             border: none;
@@ -63,53 +136,65 @@
             font-size: 16px;
             flex: 1;
         }
+
         .button:hover {
-            background-color: #2980b9;
+            background-color: var(--button-primary-hover);
         }
+
         .button.secondary {
-            background-color: #95a5a6;
+            background-color: var(--button-secondary);
         }
+
         .button.secondary:hover {
-            background-color: #7f8c8d;
+            background-color: var(--button-secondary-hover);
         }
+
         .entries-list {
-            background-color: white;
+            background-color: var(--card-bg);
             padding: 20px;
             border-radius: 8px;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            box-shadow: 0 2px 4px var(--shadow-color);
         }
+
         .entries-list h2 {
             margin-top: 0;
-            color: #2c3e50;
+            color: var(--title-color);
         }
+
         .entry-item {
             padding: 10px;
-            border-bottom: 1px solid #eee;
+            border-bottom: 1px solid var(--border-color);
         }
+
         .entry-item:last-child {
             border-bottom: none;
         }
+
         .entry-link {
-            color: #3498db;
+            color: var(--link-color);
             text-decoration: none;
             font-weight: bold;
         }
+
         .entry-link:hover {
             text-decoration: underline;
         }
+
         .entry-date {
-            color: #888;
+            color: var(--date-color);
             font-size: 14px;
             margin-left: 10px;
         }
+
         .no-entries {
             text-align: center;
-            color: #888;
+            color: var(--date-color);
             font-style: italic;
             margin: 30px 0;
         }
+
         .delete-button {
-            background-color: #e74c3c;
+            background-color: var(--button-delete);
             color: white;
             padding: 3px 8px;
             border: none;
@@ -118,57 +203,69 @@
             font-size: 12px;
             margin-left: 10px;
         }
+
         .delete-button:hover {
-            background-color: #c0392b;
+            background-color: var(--button-delete-hover);
         }
+
         .back-link {
             display: inline-block;
             margin-bottom: 20px;
-            color: #3498db;
+            color: var(--link-color);
             text-decoration: none;
         }
+
         .back-link:hover {
             text-decoration: underline;
         }
+
         .post-container {
-            background-color: white;
+            background-color: var(--card-bg);
             padding: 25px;
             border-radius: 8px;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            box-shadow: 0 2px 4px var(--shadow-color);
         }
+
         .post-title {
             font-size: 28px;
             margin-top: 0;
-            color: #2c3e50;
+            color: var(--title-color);
         }
+
         .post-date {
-            color: #888;
+            color: var(--date-color);
             font-size: 14px;
             margin-bottom: 20px;
             display: block;
         }
+
         .post-content {
             white-space: pre-wrap;
             line-height: 1.8;
         }
+
         .status-message {
             padding: 10px;
             margin: 10px 0;
             border-radius: 4px;
             text-align: center;
         }
+
         .success {
-            background-color: #d4edda;
-            color: #155724;
+            background-color: var(--success-bg);
+            color: var(--success-color);
         }
+
         .error {
-            background-color: #f8d7da;
-            color: #721c24;
+            background-color: var(--error-bg);
+            color: var(--error-color);
         }
     </style>
 </head>
 <body>
     <h1>Project X</h1>
+    
+    <button id="mode-toggle" class="mode-toggle" onclick="toggleDarkMode()">Switch to Dark Mode</button>
     
     <div id="status-container"></div>
     
@@ -202,6 +299,28 @@
     </div>
     
     <script>
+        // Function to toggle dark mode
+        function toggleDarkMode() {
+            document.body.classList.toggle('dark-mode');
+            const button = document.getElementById('mode-toggle');
+            
+            if (document.body.classList.contains('dark-mode')) {
+                button.textContent = 'Switch to Light Mode';
+                localStorage.setItem('darkMode', 'enabled');
+            } else {
+                button.textContent = 'Switch to Dark Mode';
+                localStorage.setItem('darkMode', 'disabled');
+            }
+        }
+        
+        // Check for saved dark mode preference
+        document.addEventListener('DOMContentLoaded', function() {
+            if (localStorage.getItem('darkMode') === 'enabled') {
+                document.body.classList.add('dark-mode');
+                document.getElementById('mode-toggle').textContent = 'Switch to Light Mode';
+            }
+        });
+        
         // Function to show status messages
         function showStatus(message, isError = false) {
             const statusContainer = document.getElementById('status-container');
@@ -235,13 +354,19 @@
         function saveEntry() {
             try {
                 const title = document.getElementById('entry-title').value.trim();
-                const content = document.getElementById('entry-content').value.trim();
-                const date = new Date().toLocaleString();
+                const content = document.getElementById('entry-content').value;
                 
-                if (!title || !content) {
-                    showStatus('Please enter both a title and content.', true);
+                if (!title) {
+                    showStatus('Please enter a title for your post.', true);
                     return;
                 }
+                
+                if (!content) {
+                    showStatus('Please enter some content for your post.', true);
+                    return;
+                }
+                
+                const date = new Date().toLocaleString();
                 
                 // Create new entry object
                 const newEntry = {
