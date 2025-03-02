@@ -72,29 +72,35 @@
         .button.secondary:hover {
             background-color: #7f8c8d;
         }
-        .entry {
+        .entries-list {
             background-color: white;
-            padding: 15px;
-            margin-bottom: 20px;
+            padding: 20px;
             border-radius: 8px;
             box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        .entries-list h2 {
+            margin-top: 0;
+            color: #2c3e50;
+        }
+        .entry-item {
+            padding: 10px;
+            border-bottom: 1px solid #eee;
+        }
+        .entry-item:last-child {
+            border-bottom: none;
+        }
+        .entry-link {
+            color: #3498db;
+            text-decoration: none;
+            font-weight: bold;
+        }
+        .entry-link:hover {
+            text-decoration: underline;
         }
         .entry-date {
             color: #888;
             font-size: 14px;
-            margin-bottom: 5px;
-        }
-        .entry-title {
-            font-size: 22px;
-            font-weight: bold;
-            margin-bottom: 10px;
-            color: #2c3e50;
-        }
-        .entry-content {
-            white-space: pre-wrap;
-        }
-        .entries-container {
-            margin-top: 30px;
+            margin-left: 10px;
         }
         .no-entries {
             text-align: center;
@@ -105,42 +111,93 @@
         .delete-button {
             background-color: #e74c3c;
             color: white;
-            padding: 5px 10px;
+            padding: 3px 8px;
             border: none;
             border-radius: 4px;
             cursor: pointer;
-            font-size: 14px;
-            float: right;
+            font-size: 12px;
+            margin-left: 10px;
         }
         .delete-button:hover {
             background-color: #c0392b;
+        }
+        .back-link {
+            display: inline-block;
+            margin-bottom: 20px;
+            color: #3498db;
+            text-decoration: none;
+        }
+        .back-link:hover {
+            text-decoration: underline;
+        }
+        .post-container {
+            background-color: white;
+            padding: 25px;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        .post-title {
+            font-size: 28px;
+            margin-top: 0;
+            color: #2c3e50;
+        }
+        .post-date {
+            color: #888;
+            font-size: 14px;
+            margin-bottom: 20px;
+            display: block;
+        }
+        .post-content {
+            white-space: pre-wrap;
+            line-height: 1.8;
         }
     </style>
 </head>
 <body>
     <h1>Project X</h1>
     
-    <div class="input-container">
-        <label for="entry-title">Title:</label>
-        <input type="text" id="entry-title" placeholder="Enter title">
+    <div id="main-page">
+        <div class="input-container">
+            <label for="entry-title">Title:</label>
+            <input type="text" id="entry-title" placeholder="Enter title">
+            
+            <label for="entry-content" style="margin-top: 15px;">Content:</label>
+            <textarea id="entry-content" placeholder="Write your content here..."></textarea>
+        </div>
         
-        <label for="entry-content" style="margin-top: 15px;">Content:</label>
-        <textarea id="entry-content" placeholder="Write your content here..."></textarea>
+        <div class="button-container">
+            <button class="button" onclick="saveEntry()">Post</button>
+            <button class="button secondary" onclick="clearForm()">Clear</button>
+        </div>
+        
+        <div class="entries-list" id="entries-list">
+            <h2>All Posts</h2>
+            <div id="entries"></div>
+        </div>
     </div>
     
-    <div class="button-container">
-        <button class="button" onclick="saveEntry()">Post</button>
-        <button class="button secondary" onclick="clearForm()">Clear</button>
-    </div>
-    
-    <div class="entries-container" id="entries-container">
-        <h2>Entries</h2>
-        <div id="entries"></div>
+    <div id="post-page" style="display: none;">
+        <a href="#" class="back-link" onclick="showMainPage(); return false;">&larr; Back to main page</a>
+        <div class="post-container">
+            <h1 class="post-title" id="post-title"></h1>
+            <span class="post-date" id="post-date"></span>
+            <div class="post-content" id="post-content"></div>
+        </div>
     </div>
     
     <script>
         // Load entries when page loads
-        document.addEventListener('DOMContentLoaded', loadEntries);
+        document.addEventListener('DOMContentLoaded', function() {
+            loadEntries();
+            
+            // Check if URL has a post ID
+            const urlParams = new URLSearchParams(window.location.search);
+            const postId = urlParams.get('post');
+            
+            if (postId) {
+                showPost(postId);
+            }
+        });
         
         function saveEntry() {
             const title = document.getElementById('entry-title').value.trim();
@@ -173,6 +230,8 @@
             
             // Reload entries display
             loadEntries();
+            
+            alert('Post created successfully!');
         }
         
         function loadEntries() {
@@ -186,13 +245,13 @@
             
             let entriesHTML = '';
             
-            entries.forEach(entry => {
+            entries.forEach((entry, index) => {
                 entriesHTML += `
-                    <div class="entry" id="entry-${entry.id}">
-                        <button class="delete-button" onclick="deleteEntry(${entry.id})">Delete</button>
-                        <div class="entry-date">${entry.date}</div>
-                        <div class="entry-title">${entry.title}</div>
-                        <div class="entry-content">${entry.content}</div>
+                    <div class="entry-item" id="entry-item-${entry.id}">
+                        <span>${index + 1}. </span>
+                        <a href="#" class="entry-link" onclick="showPost(${entry.id}); return false;">${entry.title}</a>
+                        <span class="entry-date">${entry.date}</span>
+                        <button class="delete-button" onclick="deleteEntry(${entry.id}); event.stopPropagation();">Delete</button>
                     </div>
                 `;
             });
@@ -200,16 +259,52 @@
             entriesContainer.innerHTML = entriesHTML;
         }
         
+        function showPost(id) {
+            const entries = JSON.parse(localStorage.getItem('projectXEntries') || '[]');
+            const entry = entries.find(entry => entry.id == id);
+            
+            if (!entry) {
+                alert('Post not found!');
+                return;
+            }
+            
+            document.getElementById('post-title').textContent = entry.title;
+            document.getElementById('post-date').textContent = entry.date;
+            document.getElementById('post-content').textContent = entry.content;
+            
+            document.getElementById('main-page').style.display = 'none';
+            document.getElementById('post-page').style.display = 'block';
+            
+            // Update URL without reloading the page
+            window.history.pushState({}, '', `?post=${id}`);
+            
+            // Scroll to top
+            window.scrollTo(0, 0);
+        }
+        
+        function showMainPage() {
+            document.getElementById('main-page').style.display = 'block';
+            document.getElementById('post-page').style.display = 'none';
+            
+            // Update URL without reloading the page
+            window.history.pushState({}, '', window.location.pathname);
+        }
+        
         function deleteEntry(id) {
-            if (confirm('Are you sure you want to delete this entry?')) {
+            if (confirm('Are you sure you want to delete this post?')) {
                 // Get entries from localStorage
                 let entries = JSON.parse(localStorage.getItem('projectXEntries') || '[]');
                 
                 // Filter out the entry to delete
-                entries = entries.filter(entry => entry.id !== id);
+                entries = entries.filter(entry => entry.id != id);
                 
                 // Save back to localStorage
                 localStorage.setItem('projectXEntries', JSON.stringify(entries));
+                
+                // If we're on the post page, go back to main page
+                if (document.getElementById('post-page').style.display !== 'none') {
+                    showMainPage();
+                }
                 
                 // Reload entries display
                 loadEntries();
@@ -220,6 +315,18 @@
             document.getElementById('entry-title').value = '';
             document.getElementById('entry-content').value = '';
         }
+        
+        // Handle browser back button
+        window.onpopstate = function() {
+            const urlParams = new URLSearchParams(window.location.search);
+            const postId = urlParams.get('post');
+            
+            if (postId) {
+                showPost(postId);
+            } else {
+                showMainPage();
+            }
+        };
     </script>
 </body>
 </html>
