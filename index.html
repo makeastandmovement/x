@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Project X</title>
     
-    **<!-- Styles -->**
+    <!-- Styles -->
     <style>
         body {
             font-family: Arial, sans-serif;
@@ -68,12 +68,12 @@
         }
     </style>
 
-    **<!-- Load Supabase Library via CDN -->**
+    <!-- Load Supabase Library via CDN -->
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 </head>
 <body>
 
-    **<!-- Blog Interface -->**
+    <!-- Blog Interface -->
     <h1>Project X</h1>
 
     <div>
@@ -94,16 +94,16 @@
         <p class="loading">Loading posts...</p>
     </div>
 
-    **<!-- JavaScript Logic -->**
+    <!-- JavaScript Logic -->
     <script>
-        **// Declare supabase variable in global scope**
+        // Declare supabase variable in global scope
         let supabase;
 
-        **// Supabase credentials (replace with your own)**
-        const SUPABASE_URL = "https://gcvpdvtpojqafojqaibr.supabase.co"; // Replace with your Supabase URL
-        const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImdjdnBkdnRwb2pxYWZvanFhaWJyIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDA4NzYxNDMsImV4cCI6MjA1NjQ1MjE0M30.e-HnIjJFA0T2UlVyVBhJM46pTu66vAKrsIfoFkwFgEk"; // Replace with your anon key
+        // Supabase credentials
+        const SUPABASE_URL = "https://gcvpdvtpojqafojqaibr.supabase.co";
+        const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImdjdnBkdnRwb2pxYWZvanFhaWJyIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDA4NzYxNDMsImV4cCI6MjA1NjQ1MjE0M30.e-HnIjJFA0T2UlVyVBhJM46pTu66vAKrsIfoFkwFgEk";
 
-        **// Initialize Supabase client after DOM is loaded**
+        // Initialize Supabase client after DOM is loaded
         document.addEventListener("DOMContentLoaded", function() {
             if (typeof window.supabase === 'undefined') {
                 document.getElementById("posts-list").innerHTML = 
@@ -114,7 +114,7 @@
             loadPosts();
         });
 
-        **// Save a new post to Supabase**
+        // Save a new post to Supabase
         async function savePost() {
             if (!supabase) {
                 alert("Supabase client not initialized.");
@@ -148,7 +148,7 @@
             }
         }
 
-        **// Load all posts from Supabase**
+        // Load all posts from Supabase
         async function loadPosts() {
             if (!supabase) {
                 document.getElementById("posts-list").innerHTML = 
@@ -193,7 +193,7 @@
             }
         }
 
-        **// Delete a post from Supabase**
+        // Delete a post from Supabase
         async function deletePost(id) {
             if (!supabase) {
                 alert("Supabase client not initialized.");
@@ -217,20 +217,20 @@
             }
         }
 
-        **// Clear the form fields**
+        // Clear the form fields
         function clearForm() {
             document.getElementById("entry-title").value = "";
             document.getElementById("entry-content").value = "";
         }
 
-        **// Escape HTML to prevent XSS**
+        // Escape HTML to prevent XSS
         function escapeHtml(unsafe) {
             return unsafe
                 .replace(/&/g, "&amp;")
                 .replace(/</g, "&lt;")
                 .replace(/>/g, "&gt;")
                 .replace(/"/g, "&quot;")
-                .replace(/'/g, "&#039;");
+                .replace(/'/g, "&#39;");
         }
     </script>
 
